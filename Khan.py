@@ -30,7 +30,6 @@ SO_FILES = {
     "311": BASE / "RTTR111.cpython-311.so",
     "313": BASE / "TRRT11.cpython-313.so",    
 }
-SO_FILE = SO_FILES.get(PYVER)
 LOGO_FILE=BASE/"logo.png"
 
 if SO_FILE is None:
