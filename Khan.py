@@ -31,7 +31,7 @@ SO_FILES = {
     "313": BASE / "TRRT11.cpython-313.so",    
 }
 SO_FILE = SO_FILES.get(PYVER)
-LOGO_FILE=BASE/"logo.png
+LOGO_FILE=BASE/"logo.png"
 
 if SO_FILE is None:
     print(f"ERROR: Python {PYVER} supported nahi hai.")
