@@ -10,7 +10,9 @@ def clear():
 
 def login():
     clear()
-    print(" AS1F-MAFIA LOGIN SYSTEM\n")
+    print("[+] AS1F-MAFIA LOGIN SYSTEM\n")
+    print("[+] PASSWORD AS1F-KHAN0 \n")
+    
     tries = 0
     while True:
         try:
