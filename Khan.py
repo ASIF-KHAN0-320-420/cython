@@ -15,8 +15,8 @@ PYVER = f"{sys.version_info.major}{sys.version_info.minor}"
 
 SO_FILES = {
     "310": BASE / "RTRT11.cpython-310.so",
-    "311": BASE / "RTRT11.cpython-311.so",
-    "313": BASE / "RTRT11.cpython-313.so",
+    "311": BASE / "RTTR111.cpython-311.so",
+    "313": BASE / "TRRT11.cpython-313.so",
 }
 
 SO_FILE = SO_FILES.get(PYVER)
