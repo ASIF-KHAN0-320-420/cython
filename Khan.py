@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 import os
 import base64
@@ -226,20 +228,3 @@ except Exception as e:
     print(f"{Y}✗ PROGRAM ERROR:{R}")
     print(e)
     sys.exit(1)
-
-اہم: "PASTE_YOUR_EXISTING_PROFILE_B64_HERE" کو literally نہ چھوڑنا۔ اپنی موجودہ پوری "PROFILE_B64" والی value اسی جگہ رکھنی ہے۔
-
-اس ترتیب میں flow یہ ہوگا:
-
-"PROFILE_B64 → JPEG → chafa/viu → Picture → Cython load → [01] [02] [03] menu"
-
-اگر اس کے بعد بھی صرف menu آئے اور picture نہ آئے تو Termux میں یہ دو commands چلا کر output بھیج دو:
-
-which chafa
-which viu
-
-اور:
-
-pkg install chafa viu -y
-
-پھر "python Khan.py" چلانا۔
