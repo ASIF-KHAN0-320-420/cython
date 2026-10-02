@@ -8,25 +8,25 @@ BASE = Path(__file__).resolve().parent
 print()
 print("Starting Khan.py...")
 
-SO_FILE = BASE / "TRRT11.so"
+SO_FILE = BASE / "TRRT11_13.so"
 
 if not SO_FILE.exists():
     print(f"ERROR: {SO_FILE.name} nahi mili")
     sys.exit(1)
 
 try:
-    import TRRT11
+    import TRRT11_13
 
-    print("✓ TRRT11 loaded")
+    print("✓ TRRT11_13 loaded")
     print()
 
 except Exception as e:
-    print("✗ TRRT11 LOAD ERROR:")
+    print("✗ TRRT11_13 LOAD ERROR:")
     print(e)
     sys.exit(1)
 
 try:
-    TRRT11.main()
+    TRRT11_13.main()
 
 except KeyboardInterrupt:
     print("\nProgram stopped.")
