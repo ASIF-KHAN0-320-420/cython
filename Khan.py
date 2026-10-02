@@ -8,98 +8,75 @@ from pathlib import Path
 
 BASE = Path(__file__).resolve().parent
 
+R = "\033[0m"
+W = "\033[97m"
+G = "\033[92m"
+Y = "\033[93m"
 
 # ============================================================
-# PROFILE IMAGE
+# PASTE / KEEP YOUR EXISTING PROFILE_B64 HERE
 # ============================================================
 
 PROFILE_B64 = r"""
-PASTE_THE_EXACT_PROFILE_B64_YOU_SENT_HERE
+PASTE_YOUR_EXISTING_PROFILE_B64_HERE
 """
 
-
 # ============================================================
-# COMMAND
+# INSTALL IMAGE VIEWER
 # ============================================================
 
-def cmd(command):
+def install_viewer():
     try:
-        return subprocess.run(
-            command,
+        if shutil.which("chafa") or shutil.which("viu"):
+            return
+
+        print(f"{Y}Installing image viewer...{R}")
+
+        subprocess.run(
+            ["pkg", "install", "chafa", "viu", "-y"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
             check=False
         )
+
     except Exception:
-        return None
+        pass
 
 
 # ============================================================
-# IMAGE VIEWER INSTALL
-# ============================================================
-
-print()
-print("Starting Khan.py...")
-print(f"Python: {sys.version.split()[0]}")
-print()
-
-cmd(["pkg", "update", "-y"])
-
-cmd([
-    "pkg", "install",
-    "libjpeg-turbo",
-    "libpng",
-    "freetype",
-    "zlib",
-    "viu",
-    "-y"
-])
-
-# Chafa optional hai
-cmd(["pkg", "install", "chafa", "-y"])
-
-
-# ============================================================
-# SHOW PROFILE
+# SHOW PROFILE IMAGE
 # ============================================================
 
 def show_profile():
-
-    image = BASE / ".profile_khan.jpg"
+    image_file = BASE / ".khan_profile.jpg"
 
     try:
         data = "".join(PROFILE_B64.split())
 
-        if not data:
-            print("PROFILE_B64 empty hai.")
+        if not data or "PASTE_YOUR_EXISTING" in data:
+            print(f"{Y}PROFILE_B64 missing hai.{R}")
             return
 
-        raw = base64.b64decode(data)
+        raw = base64.b64decode(data, validate=False)
 
         if not raw.startswith(b"\xff\xd8"):
-            print("PROFILE_B64 valid JPEG nahi hai.")
+            print(f"{Y}Profile image JPEG nahi hai.{R}")
             return
 
-        image.write_bytes(raw)
+        image_file.write_bytes(raw)
 
         print()
-        print("==============================================")
-        print("              ASIF-KHAN0")
-        print("==============================================")
+        print(f"{W}Loading profile...{R}")
         print()
 
-        # ----------------------------------------------------
-        # CHАFA
-        # ----------------------------------------------------
-
+        # CHAfA first
         if shutil.which("chafa"):
-
             result = subprocess.run(
                 [
                     "chafa",
-                    "--format",
-                    "symbols",
-                    "--size",
-                    "50x20",
-                    str(image)
+                    "--format", "symbols",
+                    "--size", "50x20",
+                    str(image_file)
                 ],
                 check=False
             )
@@ -108,59 +85,71 @@ def show_profile():
                 print()
                 return
 
-        # ----------------------------------------------------
-        # VIU FALLBACK
-        # ----------------------------------------------------
-
+        # VIU fallback
         if shutil.which("viu"):
-
-            result = subprocess.run(
+            subprocess.run(
                 [
                     "viu",
-                    "-w",
-                    "50",
-                    str(image)
+                    "-w", "50",
+                    str(image_file)
                 ],
                 check=False
             )
 
-            if result.returncode == 0:
-                print()
-                return
+            print()
+            return
 
-        print()
-        print("ERROR: chafa/viu available nahi hai.")
+        print(f"{Y}chafa/viu install nahi hai.{R}")
         print("Run: pkg install chafa viu -y")
 
     except Exception as e:
-        print()
-        print("PICTURE ERROR:", e)
+        print(f"{Y}Picture error: {e}{R}")
 
     finally:
         try:
-            image.unlink(missing_ok=True)
+            if image_file.exists():
+                image_file.unlink()
         except Exception:
             pass
 
 
 # ============================================================
-# PICTURE FIRST
+# DEPENDENCIES
+# ============================================================
+
+def setup_dependencies():
+    try:
+        subprocess.run(
+            ["pkg", "install", "chafa", "viu",
+             "libjpeg-turbo", "libpng",
+             "freetype", "zlib", "-y"],
+            check=False
+        )
+    except Exception:
+        pass
+
+
+# ============================================================
+# START
+# ============================================================
+
+print()
+print(f"{W}Starting Khan.py...{R}")
+print(f"{W}Python: {sys.version.split()[0]}{R}")
+print()
+
+# Install viewer BEFORE picture
+install_viewer()
+
+# ============================================================
+# PICTURE MUST APPEAR BEFORE CYTHON MENU
 # ============================================================
 
 show_profile()
 
-
-# ============================================================
-# OPTIONAL PILLOW
-# ============================================================
-
-try:
-    from PIL import Image
-    print("Pillow OK")
-except Exception:
-    print("Pillow available nahi hai.")
-    print("Picture ke liye Pillow required nahi hai.")
-
+print()
+print(f"{W}Starting Cython...{R}")
+print()
 
 # ============================================================
 # PYTHON VERSION
@@ -168,50 +157,34 @@ except Exception:
 
 PYVER = f"{sys.version_info.major}{sys.version_info.minor}"
 
-
-# ============================================================
-# CYTHON FILES
-# ============================================================
-
 SO_FILES = {
     "310": BASE / "RTRT11.cpython-310.so",
     "311": BASE / "RTTR111.cpython-311.so",
     "313": BASE / "TRRT11.cpython-313.so",
 }
 
-
 SO_FILE = SO_FILES.get(PYVER)
 
-
 if SO_FILE is None:
-
-    print()
-    print(f"ERROR: Python {PYVER} supported nahi hai.")
+    print(f"{Y}ERROR: Python {PYVER} supported nahi hai.{R}")
     print("Supported: Python 3.10 / 3.11 / 3.13")
     sys.exit(1)
 
-
 if not SO_FILE.exists():
-
-    print()
-    print(f"ERROR: {SO_FILE.name} nahi mili.")
+    print(f"{Y}ERROR: {SO_FILE.name} nahi mili.{R}")
     sys.exit(1)
 
-
-print()
 print(f"Python {sys.version_info.major}.{sys.version_info.minor} detected")
 print(f"Loading: {SO_FILE.name}")
 print()
 
-
 # ============================================================
-# LOAD SO
+# LOAD CYTHON SO
 # ============================================================
 
 MODULE_NAME = SO_FILE.name.split(".")[0]
 
 try:
-
     spec = importlib.util.spec_from_file_location(
         MODULE_NAME,
         SO_FILE
@@ -226,37 +199,48 @@ try:
 
     spec.loader.exec_module(MODULE)
 
-    print(f"✓ {MODULE_NAME} loaded")
+    print(f"{G}✓ {MODULE_NAME} loaded{R}")
     print()
 
 except Exception as e:
-
-    print()
-    print(f"✗ {MODULE_NAME} LOAD ERROR:")
+    print(f"{Y}✗ {MODULE_NAME} LOAD ERROR:{R}")
     print(e)
     sys.exit(1)
 
-
 # ============================================================
-# RUN MAIN
+# RUN MAIN MENU
 # ============================================================
 
 try:
-
     if not hasattr(MODULE, "main"):
-        print(f"✗ {MODULE_NAME}.main() nahi mila")
+        print(f"{Y}✗ {MODULE_NAME}.main() nahi mila{R}")
         sys.exit(1)
 
+    # Picture already displayed above.
+    # Ab Cython ka MAIN MENU chalega.
     MODULE.main()
 
 except KeyboardInterrupt:
-
-    print()
-    print("Program stopped.")
+    print("\nProgram stopped.")
 
 except Exception as e:
-
-    print()
-    print("✗ PROGRAM ERROR:")
+    print(f"{Y}✗ PROGRAM ERROR:{R}")
     print(e)
     sys.exit(1)
+
+اہم: "PASTE_YOUR_EXISTING_PROFILE_B64_HERE" کو literally نہ چھوڑنا۔ اپنی موجودہ پوری "PROFILE_B64" والی value اسی جگہ رکھنی ہے۔
+
+اس ترتیب میں flow یہ ہوگا:
+
+"PROFILE_B64 → JPEG → chafa/viu → Picture → Cython load → [01] [02] [03] menu"
+
+اگر اس کے بعد بھی صرف menu آئے اور picture نہ آئے تو Termux میں یہ دو commands چلا کر output بھیج دو:
+
+which chafa
+which viu
+
+اور:
+
+pkg install chafa viu -y
+
+پھر "python Khan.py" چلانا۔
