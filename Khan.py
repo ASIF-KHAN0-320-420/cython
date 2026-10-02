@@ -8,7 +8,7 @@ BASE = Path(__file__).resolve().parent
 print()
 print("Starting Khan.py...")
 
-SO_FILE = BASE / "TRRT11.cpython-313-aarch64-linux-android.so"
+SO_FILE = BASE / "TRRT11.so"
 
 if not SO_FILE.exists():
     print(f"ERROR: {SO_FILE.name} nahi mili")
