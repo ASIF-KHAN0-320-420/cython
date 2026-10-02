@@ -94,11 +94,4 @@ except Exception as e:
     print("✗ PROGRAM ERROR:")
     print(e)
     sys.exit(1)
-
-Ab:
-
-python Khan.py
-
-chalana.
-
-Important: tumhari "SO_FILES" mein Python 3.10 aur 3.11 ke paths abhi empty hain. Agar tumhara actual goal 3.10, 3.11 aur 3.13 tino support karna hai, to un dono ki ".so" filenames bhi deni hongi.
+ 
