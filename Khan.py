@@ -15,7 +15,7 @@ PYVER = f"{sys.version_info.major}{sys.version_info.minor}"
 
 # Python version ke mutabiq SO
 SO_FILES = {
-    "313": BASE / "TRRT11.cpython-313-aarch64-linux-android.so",
+    "313": BASE / "TRRT11.so",
     "311": BASE / "TRRT11.cpython-311-aarch64-linux-android.so",
     "310": BASE / "TRRT11.cpython-310-aarch64-linux-android.so",
 }
