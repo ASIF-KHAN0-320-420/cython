@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import importlib.util
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent
@@ -10,14 +11,12 @@ print("Starting Khan.py...")
 print(f"Python: {sys.version.split()[0]}")
 print()
 
-# Current Python version
 PYVER = f"{sys.version_info.major}{sys.version_info.minor}"
 
-# Python version ke mutabiq SO
 SO_FILES = {
-    "313": BASE / "RTRT11.so",
-    "311": BASE / "RTTR111.so",
-    "310": BASE / "TRRT11.so",
+    "310": BASE / "RTRT11.cpython-310.so",
+    "311": BASE / "RTRT11.cpython-311.so",
+    "313": BASE / "RTRT11.cpython-313.so",
 }
 
 SO_FILE = SO_FILES.get(PYVER)
@@ -29,9 +28,6 @@ if SO_FILE is None:
 
 if not SO_FILE.exists():
     print(f"ERROR: {SO_FILE.name} nahi mili.")
-    print()
-    print("Required file:")
-    print(SO_FILE.name)
     sys.exit(1)
 
 print(f"Python {sys.version_info.major}.{sys.version_info.minor} detected")
@@ -39,7 +35,17 @@ print(f"Loading: {SO_FILE.name}")
 print()
 
 try:
-    import TRRT11
+    spec = importlib.util.spec_from_file_location(
+        "TRRT11",
+        SO_FILE
+    )
+
+    if spec is None or spec.loader is None:
+        raise ImportError("SO loader create nahi hua")
+
+    TRRT11 = importlib.util.module_from_spec(spec)
+    sys.modules["TRRT11"] = TRRT11
+    spec.loader.exec_module(TRRT11)
 
     print("✓ TRRT11 loaded")
     print()
@@ -50,6 +56,10 @@ except Exception as e:
     sys.exit(1)
 
 try:
+    if not hasattr(TRRT11, "main"):
+        print("✗ TRRT11.main() nahi mila")
+        sys.exit(1)
+
     TRRT11.main()
 
 except KeyboardInterrupt:
