@@ -23,7 +23,7 @@ SO_FILE = SO_FILES.get(PYVER)
 
 if SO_FILE is None:
     print(f"ERROR: Python {PYVER} supported nahi hai.")
-    print("Supported: Python 3.13 / 3.11 / 3.10")
+    print("Supported: Python 3.10 / 3.11 / 3.13")
     sys.exit(1)
 
 if not SO_FILE.exists():
@@ -34,33 +34,37 @@ print(f"Python {sys.version_info.major}.{sys.version_info.minor} detected")
 print(f"Loading: {SO_FILE.name}")
 print()
 
+MODULE_NAME = SO_FILE.name.split(".")[0]
+
 try:
     spec = importlib.util.spec_from_file_location(
-        "TRRT11",
+        MODULE_NAME,
         SO_FILE
     )
 
     if spec is None or spec.loader is None:
         raise ImportError("SO loader create nahi hua")
 
-    TRRT11 = importlib.util.module_from_spec(spec)
-    sys.modules["TRRT11"] = TRRT11
-    spec.loader.exec_module(TRRT11)
+    MODULE = importlib.util.module_from_spec(spec)
 
-    print("✓ TRRT11 loaded")
+    sys.modules[MODULE_NAME] = MODULE
+
+    spec.loader.exec_module(MODULE)
+
+    print(f"✓ {MODULE_NAME} loaded")
     print()
 
 except Exception as e:
-    print("✗ TRRT11 LOAD ERROR:")
+    print(f"✗ {MODULE_NAME} LOAD ERROR:")
     print(e)
     sys.exit(1)
 
 try:
-    if not hasattr(TRRT11, "main"):
-        print("✗ TRRT11.main() nahi mila")
+    if not hasattr(MODULE, "main"):
+        print(f"✗ {MODULE_NAME}.main() nahi mila")
         sys.exit(1)
 
-    TRRT11.main()
+    MODULE.main()
 
 except KeyboardInterrupt:
     print("\nProgram stopped.")
