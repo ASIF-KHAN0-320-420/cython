@@ -39,8 +39,6 @@ except ImportError:
         sys.exit(1)
 
 SO_FILES = {
-    "310": BASE / "",
-    "311": BASE / "",
     "313": BASE / "TRRT11.cpython-313.so",
 }
 
