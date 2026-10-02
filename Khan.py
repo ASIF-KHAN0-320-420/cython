@@ -7,6 +7,7 @@ from pathlib import Path
 BASE = Path(__file__).resolve().parent
 print("Starting Khan.py...")
 print(f"Python: {sys.version.split()[0]}")
+
 PYVER = f"{sys.version_info.major}{sys.version_info.minor}"
 
 try:
@@ -16,10 +17,23 @@ except ImportError:
     print("Pillow install ho raha hai...")
     try:
         subprocess.run(["pkg", "update", "-y"], check=True)
-        subprocess.run(["pkg", "install", "libjpeg-turbo", "libpng", "freetype", "zlib", "-y"], check=True)
-        subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "pip", "setuptools", "wheel"], check=True)
-        subprocess.run([sys.executable, "-m", "pip", "install", "--no-cache-dir", "Pillow"], check=True)
-        subprocess.run([sys.executable, "-c", "from PIL import Image; print('Pillow OK')"], check=True)
+        subprocess.run(
+            ["pkg", "install", "libjpeg-turbo", "libpng", "freetype", "zlib", "-y"],
+            check=True
+        )
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "--upgrade",
+             "pip", "setuptools", "wheel"],
+            check=True
+        )
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "--no-cache-dir", "Pillow"],
+            check=True
+        )
+        subprocess.run(
+            [sys.executable, "-c", "from PIL import Image; print('Pillow OK')"],
+            check=True
+        )
     except subprocess.CalledProcessError as e:
         print("✗ Pillow installation failed")
         print(e)
@@ -28,9 +42,12 @@ except ImportError:
 SO_FILES = {
     "310": BASE / "",
     "311": BASE / "",
-    "313": BASE / "TRRT11.cpython-313.so",    
+    "313": BASE / "TRRT11.cpython-313.so",
 }
-LOGO_FILE=BASE/"logo.png"
+
+LOGO_FILE = BASE / "logo.png"
+
+SO_FILE = SO_FILES.get(PYVER)
 
 if SO_FILE is None:
     print(f"ERROR: Python {PYVER} supported nahi hai.")
@@ -43,16 +60,21 @@ if not SO_FILE.exists():
 
 print(f"Python {sys.version_info.major}.{sys.version_info.minor} detected")
 print(f"Loading: {SO_FILE.name}")
+
 MODULE_NAME = SO_FILE.name.split(".")[0]
 
 try:
     spec = importlib.util.spec_from_file_location(MODULE_NAME, SO_FILE)
+
     if spec is None or spec.loader is None:
         raise ImportError("SO loader create nahi hua")
+
     MODULE = importlib.util.module_from_spec(spec)
     sys.modules[MODULE_NAME] = MODULE
     spec.loader.exec_module(MODULE)
+
     print(f"✓ {MODULE_NAME} loaded")
+
 except Exception as e:
     print(f"✗ {MODULE_NAME} LOAD ERROR:")
     print(e)
@@ -62,10 +84,21 @@ try:
     if not hasattr(MODULE, "main"):
         print(f"✗ {MODULE_NAME}.main() nahi mila")
         sys.exit(1)
+
     MODULE.main()
+
 except KeyboardInterrupt:
     print("\nProgram stopped.")
+
 except Exception as e:
     print("✗ PROGRAM ERROR:")
     print(e)
     sys.exit(1)
+
+Ab:
+
+python Khan.py
+
+chalana.
+
+Important: tumhari "SO_FILES" mein Python 3.10 aur 3.11 ke paths abhi empty hain. Agar tumhara actual goal 3.10, 3.11 aur 3.13 tino support karna hai, to un dono ki ".so" filenames bhi deni hongi.
